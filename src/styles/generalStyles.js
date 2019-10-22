@@ -1,11 +1,20 @@
 import { StyleSheet, Dimensions } from "react-native";
 
 export const container = StyleSheet.create({
-  center: {
+  screen: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
   },
+  gradientContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  authContainer: {
+    width: '80%',
+    // maxWidth: 400,
+    // maxHeight: 400,
+    padding: 20
+  }
 })
 
 export const dimensions = { 
@@ -26,9 +35,10 @@ export const cards = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#fff',
     shadowColor: "#000",
+    shadowRadius: 3, // new to me
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 2,
     },
     shadowOpacity: 0.27,
     elevation: 6,
