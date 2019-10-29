@@ -1,40 +1,40 @@
 import React, { useReducer, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
-import { container, colors } from '../styles/index';
+import { container, colors, text, dimensions } from '../styles/index';
 import { Cards, Button, TextField } from '../components/index';
 import { LinearGradient } from 'expo-linear-gradient';
-// import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import * as authActions from '../store/actions/auth';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid
+    };
+    let updatedFormIsValid = true;
+    // what is this expression?
+    for (const key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key]
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValidities: updatedValidities,
+      inputValues: updatedValues
+    };
+  }
+  return state;
+}
 
 const AuthScreen = props => {
   // this can be put into a different file
-
-  const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
-
-  const formReducer = (state, action) => {
-    if (action.type === FORM_INPUT_UPDATE) {
-      const updatedValues = {
-        ...state.inputValues,
-        [action.input]: action.value
-      };
-      const updatedValidities = {
-        ...state.inputValidities,
-        [action.input]: action.isValid
-      };
-      let updatedFormIsValid = true;
-      // what is this expression?
-      for (const key in updatedValidities) {
-        updatedFormIsValid = updatedFormIsValid && updatedValidities[key]
-      }
-      return {
-        formIsValid: updatedFormIsValid,
-        inputValidities: updatedValidities,
-        inputValues: updatedValues
-      };
-    }
-    return state;
-  }
-
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   // why joining two values in an object
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -49,14 +49,21 @@ const AuthScreen = props => {
     formIsValid: false
   })
 
-  // const signUpHandler = () => {
-  //   dispatch(
-  //     authActions.signup(
-  //       formState.inputValues.email,
-  //       formState.inputValues.password
-  //     )
-  //   )
-  // }
+  const signUpHandler = () => {
+    console.log('getting to the signUpHandler')
+
+    // testing values
+    console.log('email-1:', formState.inputValues.email,'password-2:',formState.inputValues.password)
+
+    dispatch(
+      authActions.signup(
+        'hello',
+        'world'
+        // formState.inputValues.email,
+        // formState.inputValues.password
+      )
+    )
+  }
 
   // why is usecallback here?
   const onChangeTextHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
@@ -86,7 +93,6 @@ const AuthScreen = props => {
               keyboardType='email-address'
               autoCapitalize='none'
             />
-            <View style={{padding: 10}}/> {/* Is this really necessary? */}
             <TextField
               title={'Password'}
               color={colors.black}
@@ -100,7 +106,9 @@ const AuthScreen = props => {
               required
               secureTextEntry
             />
-            {/* <Button
+            <View style={{ alignItems: 'center', paddingVertical: 5 }}>
+              {/* This needs to be changed to sign up */}
+              <Button
                 fontSize={text.buttonText}
                 width={dimensions.width / 3}
                 // height={20}
@@ -110,9 +118,23 @@ const AuthScreen = props => {
                 textColor={colors.blue}
                 borderColor={colors.white}
                 borderRadius={5}
-                text='button 1'
-                onButtonPress={() => this.props.navigation.navigate('Fourth')}
-              /> */}
+                text='Login'
+                onButtonPress={signUpHandler}
+              />
+              <Button
+                fontSize={text.buttonText}
+                width={dimensions.width / 3}
+                // height={20}
+                borderWidth={1}
+                padding={10}
+                color={colors.white}
+                textColor={colors.red}
+                borderColor={colors.white}
+                borderRadius={5}
+                text='Sign Up'
+              // onButtonPress={() => this.props.navigation.navigate('Fourth')}
+              />
+            </View>
           </ScrollView>
         </Cards>
       </LinearGradient>

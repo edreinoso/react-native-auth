@@ -85,7 +85,7 @@ const TextField = props => { // hook problems when having classes
   }
 
   return (
-    <View style={styles.formControler}>
+    <View style={styles.formControl}>
       <Text style={styles.label}>{title}</Text>
       <TextInput
         placeholder={placeholder ? placeholder : ""}
@@ -113,7 +113,8 @@ const TextField = props => { // hook problems when having classes
 
 const styles = StyleSheet.create({
   formControl: {
-    width: '100%'
+    width: '100%',
+    padding: 10,
   },
   label: {
     marginHorizontal: 5
