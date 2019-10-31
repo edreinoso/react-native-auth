@@ -57,10 +57,10 @@ const AuthScreen = props => {
 
     dispatch(
       authActions.signup(
-        'hello',
-        'world'
-        // formState.inputValues.email,
-        // formState.inputValues.password
+        // 'test@test.com',
+        // 'helloWorld'
+        formState.inputValues.email,
+        formState.inputValues.password
       )
     )
   }
@@ -82,6 +82,8 @@ const AuthScreen = props => {
         <Cards style={container.authContainer}>
           <ScrollView>
             <TextField
+              id='email'
+              label='E-Mail'
               title={'Email'}
               color={colors.black}
               borderColor={colors.black}
@@ -94,6 +96,8 @@ const AuthScreen = props => {
               autoCapitalize='none'
             />
             <TextField
+              id='password'
+              label='Password'
               title={'Password'}
               color={colors.black}
               borderColor={colors.black}

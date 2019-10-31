@@ -1,13 +1,7 @@
 export const SIGNUP = 'SIGNUP';
 
 export const signup = (email, password) => {
-  
-  // this is returning an empty string
-  console.log('email-2:', email,'password-2:',password)
-  
-  
   return async dispatch => {
-    //AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek
     const response = await fetch(
       'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek',
       {
@@ -24,7 +18,9 @@ export const signup = (email, password) => {
     );
 
     if (!response.ok) {
-      throw new Error('Something went wrong!');
+      const errorResData = await response.json();
+      const errorMessage = errorResData.error.message;
+      throw new Error(errorMessage);
     }
 
     const resData = await response.json();
