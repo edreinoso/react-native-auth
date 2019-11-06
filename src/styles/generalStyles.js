@@ -4,7 +4,7 @@ export const container = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  gradientContainer: {
+  centerScreen: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
@@ -63,4 +63,23 @@ export const text = StyleSheet.create({
   titleText: 20,
   buttonText: 14,
   headerText: 18
+})
+
+export const test = StyleSheet.create({
+  black:{
+    borderColor: 'black',
+    borderWidth: 1
+  },
+  blue:{
+    borderColor: 'blue',
+    borderWidth: 1
+  },
+  pink:{
+    borderColor: 'pink',
+    borderWidth: 1
+  },
+  green:{
+    borderColor: 'green',
+    borderWidth: 1
+  }
 })

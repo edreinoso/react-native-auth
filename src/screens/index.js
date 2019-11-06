@@ -2,9 +2,7 @@ import AuthScreen from './AuthScreen';
 import FirstScreen from './FirstScreen';
 import SecondScreen from './SecondScreen';
 import ThirdScreen from './ThirdScreen';
-import FourthScreen from './FourthScreen';
-import FifthScreen from './FifthScreen';
-import SixthScreen from './SixthScreen';
+import StartupScreen from './StartupScreen';
 import SettingsScreen from './SettingsScreen';
 
 export {
@@ -12,8 +10,6 @@ export {
   FirstScreen,
   SecondScreen,
   ThirdScreen,
-  FourthScreen,
-  FifthScreen,
-  SixthScreen,
+  StartupScreen,
   SettingsScreen
 };
