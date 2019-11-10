@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { container, colors, text } from '../styles/index';
 import { Cards, Button, TextField } from '../components/index';
 // import { Cards, TextField } from '../components/index';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { auth } from '../store/actions/index'
 import { connect } from "react-redux";
 import validity from '../utility/validate';
 import authReducer from '../store/actions/auth';
@@ -68,6 +68,8 @@ class AuthScreen extends Component {
   }
 
   render() {
+    const { isLoading } = this.props;
+
     return (
       // this flex is necessary for persistency
       <View style={container.screen}>
@@ -103,19 +105,23 @@ class AuthScreen extends Component {
                 borderWidth={1}
               />
               <View style={{ alignItems: 'center', paddingVertical: 5 }}>
-                <Button
-                  fontSize={text.buttonText}
-                  // width={dimensions.width / 3}
-                  // height={20}
-                  borderWidth={1}
-                  padding={10}
-                  color={colors.white}
-                  textColor={colors.red}
-                  borderColor={colors.white}
-                  borderRadius={5}
-                  text={this.state.isLogin ? 'Login' : 'Sign Up'}
-                  onButtonPress={() => onButtonPress()}
-                />
+                {isLoading ? 
+                  <ActivityIndicator size="small" color={colors.black} /> : 
+                  <Button
+                    fontSize={text.buttonText}
+                    // width={dimensions.width / 3}
+                    // height={20}
+                    borderWidth={1}
+                    padding={10}
+                    color={colors.white}
+                    textColor={colors.red}
+                    borderColor={colors.white}
+                    borderRadius={5}
+                    text={this.state.isLogin ? 'Login' : 'Sign Up'}
+                    onButtonPress={this.onButtonPressed}
+                  />
+                }
+                
                 <Button
                   fontSize={text.buttonText}
                   // width={dimensions.width / 3}
@@ -138,13 +144,19 @@ class AuthScreen extends Component {
   }
 }
 
+const mapStateToProps = state => {
+  // needs to return an object rather than a simple true/false variable
+  return {
+    isLoading: state.ui.isLoading
+  };
+  // return state.ui.isLoading;
+};
 
-// Issue the props
 const mapDispatchToProps = dispatch => {
   return {
-    auth: (email, password) => dispatch(authReducer(email,password))
+    auth: (email, password) => dispatch(auth(email,password))
   }
 }
 
-export default connect(null, mapDispatchToProps)(AuthScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(AuthScreen);
 // export default AuthScreen;

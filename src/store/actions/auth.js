@@ -5,12 +5,14 @@ import { AsyncStorage } from 'react-native';
 import { AUTH, SIGNUP } from './actionTypes';
 
 // this line is giving the yellow warning
-// import { stopLoading, startLoading } from './index';
+import { stopLoading, startLoading } from './index';
 
 // action should have a mode in order to distinguish which action is being dispatched
-export const login = (email, password) => {
+export const auth = (email, password) => {
+  console.log('email:', email, 'password:', password)
+  
   return dispatch => {
-    // dispatch(startLoading())
+    dispatch(startLoading())
     url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
     fetch(
       url,
@@ -31,16 +33,20 @@ export const login = (email, password) => {
     )
       .catch(err => {
         console.log(err);
-        alert("Authentication failed, please try again!");
-        // dispatch(stopLoading());
+        alert("Something went wrong, please try again!");
+        dispatch(stopLoading());
       })
       .then(res => res.json())
       .then(parsedRes => {
-        // dispatch(uiStopLoading());
+        dispatch(stopLoading());
         if (parsedRes.error) {
-          alert("Authentication failed, please try again!");
+          console.log(parseRes.error)
+          alert("Authentication error!");
         } else {
           console.log('successfully authenticated!')
+
+          // going to a different screen is not working
+          // this.props.navigation.navigate('First')
         }
       });
   };
