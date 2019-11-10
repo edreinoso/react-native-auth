@@ -13,7 +13,10 @@ class TextField extends Component { // hook problems when having classes
       autoCapitalize,
       color,
       value,
+      touched,
+      valid,
       onChangeInput,
+      errorText,
       minLength,
       secureTextEntry,
       keyboardType,
@@ -27,6 +30,7 @@ class TextField extends Component { // hook problems when having classes
         <TextInput
           placeholder={placeholder ? placeholder : ""}
           value={value}
+          // new function that would be on change text after finish
           onChangeText={onChangeInput}
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
@@ -40,6 +44,11 @@ class TextField extends Component { // hook problems when having classes
             borderBottomWidth: borderWidth,
           }]}
         />
+        {!valid && touched && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errorText}</Text>
+          </View>
+        )}
       </View>
     )
   }

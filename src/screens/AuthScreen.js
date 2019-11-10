@@ -11,56 +11,63 @@ import authReducer from '../store/actions/auth';
 
 // const AuthScreen = props => {
 class AuthScreen extends Component {
-  render() {
-    state = {
-      controls: {
-        email: {
-          value: '',
-          validity: false,
-          validationRules: {
-            isEmail: true
-          },
-          touched: false
+  // State needs to go outside of the render
+  state = {
+    authMode: 'login',
+    isLogin: false,
+    controls: {
+      email: {
+        value: '',
+        validity: false,
+        validationRules: {
+          isEmail: true
         },
-        password: {
-          value: '',
-          validity: false,
-          validationRules: {
-            isPassword: true // doubt
-          },
-          touched: false
-        }
+        touched: false
       },
-    }
+      password: {
+        value: '',
+        validity: false,
+        validationRules: {
+          minLength: 6 // doubt
+        },
+        touched: false
+      }
+    },
+  }
 
-    // Update text field
-    onChangeTextField = (key, value) => {
-      // cannot return something like this.prevState
-      this.setState(prevState => {
-        return {
-          controls: {
-            ...prevState.controls,
-            [key]: {
-              ...prevState.contorls[key],
-              value: value,
-              validity: validity(value, prevState.controls[key].validationRules),
-              touched: true
-            }
+  // Update text field
+  onChangeTextField = (key, value) => {
+    // cannot return something like this.prevState
+    this.setState(prevState => {
+      return {
+        controls: {
+          ...prevState.controls,
+          [key]: {
+            ...prevState.controls[key],
+            value: value,
+            validity: validity(value, prevState.controls[key].validationRules),
+            touched: true
           }
         }
-      })
+      }
+    })
+  }
 
-    }
+  // State change - dispatch actions
+  onButtonPressed = () => {
+    this.props.auth(
+      this.state.controls.email.value,
+      this.state.controls.password.value
+    )
+    // this.props.navigation.navigate('First')
+  }
+  onSwitchPressed = () => {
+    this.setState({
+      isLogin: !this.state.isLogin
+    })
+  }
 
-    // State change - dispatch actions
-    onButtonPressed = () => {
-      this.props.auth(
-        this.state.controls.email.value,
-        this.state.controls.password.value
-      )
-      this.props.navigation.navigate('First')
-    }
-
+  render() {
     return (
       // this flex is necessary for persistency
       <View style={container.screen}>
@@ -69,11 +76,10 @@ class AuthScreen extends Component {
             <ScrollView>
               <TextField
                 onChangeInput={val => this.onChangeTextField('email', val)}
-                // controls variable is giving trouble..
-
                 value={this.state.controls.email.value}
-                // valid={this.state.controls.email.valid}
-                // touched={this.state.controls.email.touched}
+                valid={this.state.controls.email.validity}
+                touched={this.state.controls.email.touched}
+                errorText='Please enter a valid email'
                 keyboardType='email-address'
                 autoCapitalize='none'
                 //Styles
@@ -83,11 +89,12 @@ class AuthScreen extends Component {
                 borderWidth={1}
               />
               <TextField
-                // onChangeInput={val => this.onChangeTextField('password', val)}
-                // value={this.state.controls.password.value}
-                // valid={this.state.controls.password.valid}
-                // touched={this.state.controls.password.touched}
+                onChangeInput={val => this.onChangeTextField('password', val)}
+                value={this.state.controls.password.value}
+                valid={this.state.controls.password.validity}
+                touched={this.state.controls.password.touched}
                 keyboardType='default'
+                errorText='Please enter a valid password'
                 secureTextEntry
                 // Styles
                 title={'Password'}
@@ -106,8 +113,21 @@ class AuthScreen extends Component {
                   textColor={colors.red}
                   borderColor={colors.white}
                   borderRadius={5}
-                  text={'Login'}
+                  text={this.state.isLogin ? 'Login' : 'Sign Up'}
                   onButtonPress={() => onButtonPress()}
+                />
+                <Button
+                  fontSize={text.buttonText}
+                  // width={dimensions.width / 3}
+                  // height={20}
+                  borderWidth={1}
+                  padding={10}
+                  color={colors.white}
+                  textColor={colors.blue}
+                  borderColor={colors.white}
+                  borderRadius={5}
+                  text={`Switch to ${this.state.isLogin ? 'Sign Up' : 'Login'}`}
+                  onButtonPress={this.onSwitchPressed}
                 />
               </View>
             </ScrollView>
@@ -120,11 +140,11 @@ class AuthScreen extends Component {
 
 
 // Issue the props
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     auth: (email, password) => dispatch(authReducer(email,password))
-//   }
-// }
+const mapDispatchToProps = dispatch => {
+  return {
+    auth: (email, password) => dispatch(authReducer(email,password))
+  }
+}
 
-// export default connect(null, mapDispatchToProps)(AuthScreen);
-export default AuthScreen;
+export default connect(null, mapDispatchToProps)(AuthScreen);
+// export default AuthScreen;
