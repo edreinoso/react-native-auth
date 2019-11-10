@@ -7,7 +7,8 @@ import { Provider } from 'react-redux';
 import ReduxThunk from 'redux-thunk';
 import authReducer from './src/store/reducers/auth';
 
-import NavigationContainer from './src/navigation/NavigationContainer';
+// import NavigationContainer from './src/navigation/NavigationContainer';
+import ScreenNavigators from './src/navigation/ScreenNavigators';
 
 useScreens();
 
@@ -24,7 +25,8 @@ export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <NavigationContainer />
+        {/* <NavigationContainer /> */}
+        <ScreenNavigators />
       </Provider>
       // <Root>
       //   <ScreenNavigators />

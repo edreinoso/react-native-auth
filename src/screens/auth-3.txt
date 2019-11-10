@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
-import { container, colors, text } from '../styles/index';
+import { View, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { container, colors, text, dimensions } from '../styles/index';
 import { Cards, Button, TextField } from '../components/index';
 // import { Cards, TextField } from '../components/index';
 import { LinearGradient } from 'expo-linear-gradient';
-
-import { connect } from "react-redux";
-import validity from '../utility/validate';
-import authReducer from '../store/actions/auth';
+import { useDispatch } from 'react-redux';
+import * as authActions from '../store/actions/auth';
 
 // const AuthScreen = props => {
 class AuthScreen extends Component {
   render() {
+
     state = {
       controls: {
         email: {
@@ -31,6 +30,7 @@ class AuthScreen extends Component {
           touched: false
         }
       },
+      // isLoading: false
     }
 
     // Update text field
@@ -54,11 +54,8 @@ class AuthScreen extends Component {
 
     // State change - dispatch actions
     onButtonPressed = () => {
-      this.props.auth(
-        this.state.controls.email.value,
-        this.state.controls.password.value
-      )
-      this.props.navigation.navigate('First')
+      // this.setState({ isLoading: !isLoading })
+      // this.setState({ isLoading: true })
     }
 
     return (
@@ -68,32 +65,33 @@ class AuthScreen extends Component {
           <Cards style={container.authContainer}>
             <ScrollView>
               <TextField
-                onChangeInput={val => this.onChangeTextField('email', val)}
-                // controls variable is giving trouble..
-
-                value={this.state.controls.email.value}
-                // valid={this.state.controls.email.valid}
-                // touched={this.state.controls.email.touched}
-                keyboardType='email-address'
-                autoCapitalize='none'
-                //Styles
+                id='email'
+                label='E-Mail'
                 title={'Email'}
                 color={colors.black}
                 borderColor={colors.black}
                 borderWidth={1}
+                onChangeInput={onChangeTextHandler}
+                initialValue=''
+                errorText='Please enter valid email'
+                required
+                keyboardType='email-address'
+                autoCapitalize='none'
               />
               <TextField
-                // onChangeInput={val => this.onChangeTextField('password', val)}
-                // value={this.state.controls.password.value}
-                // valid={this.state.controls.password.valid}
-                // touched={this.state.controls.password.touched}
-                keyboardType='default'
-                secureTextEntry
-                // Styles
+                id='password'
+                label='Password'
                 title={'Password'}
                 color={colors.black}
                 borderColor={colors.black}
                 borderWidth={1}
+                minLength={5}
+                onChangeInput={onChangeTextHandler}
+                initialValue=''
+                errorText='Please enter valid password'
+                keyboardType='default'
+                required
+                secureTextEntry
               />
               <View style={{ alignItems: 'center', paddingVertical: 5 }}>
                 <Button
@@ -118,13 +116,4 @@ class AuthScreen extends Component {
   }
 }
 
-
-// Issue the props
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     auth: (email, password) => dispatch(authReducer(email,password))
-//   }
-// }
-
-// export default connect(null, mapDispatchToProps)(AuthScreen);
 export default AuthScreen;
