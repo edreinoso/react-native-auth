@@ -5,15 +5,18 @@ import { AsyncStorage } from 'react-native';
 import { AUTH, SIGNUP } from './actionTypes';
 
 // this line is giving the yellow warning
-import { stopLoading, startLoading } from './index';
+import { stopLoading, startLoading } from './ui';
 
 // action should have a mode in order to distinguish which action is being dispatched
-export const auth = (email, password) => {
-  console.log('email:', email, 'password:', password)
+export const auth = (email, password, authMode) => {
+  console.log('email:', email, 'password:', password, 'authMode:', authMode)
   
   return dispatch => {
     dispatch(startLoading())
     url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
+    if (authMode === 'login') {
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
+    }
     fetch(
       url,
       {

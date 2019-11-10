@@ -55,17 +55,23 @@ class AuthScreen extends Component {
 
   // State change - dispatch actions
   onButtonPressed = () => {
+    console.log(this.state.authMode)
     this.props.auth(
       this.state.controls.email.value,
-      this.state.controls.password.value
+      this.state.controls.password.value,
+      this.state.authMode
     )
-    // this.props.navigation.navigate('First')
+    this.props.navigation.navigate('First')
   }
-  onSwitchPressed = () => {
-    this.setState({
-      isLogin: !this.state.isLogin
-    })
-  }
+
+
+  onSwitchHandler = () => {
+    this.setState(prevState => {
+      return {
+        authMode: prevState.authMode === "login" ? "signup" : "login"
+      };
+    });
+  };
 
   render() {
     const { isLoading } = this.props;
@@ -117,7 +123,7 @@ class AuthScreen extends Component {
                     textColor={colors.red}
                     borderColor={colors.white}
                     borderRadius={5}
-                    text={this.state.isLogin ? 'Login' : 'Sign Up'}
+                    text={this.state.authMode === 'login' ? 'Login' : 'Sign Up'}
                     onButtonPress={this.onButtonPressed}
                   />
                 }
@@ -132,8 +138,8 @@ class AuthScreen extends Component {
                   textColor={colors.blue}
                   borderColor={colors.white}
                   borderRadius={5}
-                  text={`Switch to ${this.state.isLogin ? 'Sign Up' : 'Login'}`}
-                  onButtonPress={this.onSwitchPressed}
+                  text={`Switch to ${this.state.authMode === 'login' ? 'Sign Up' : 'Login'}`}
+                  onButtonPress={this.onSwitchHandler}
                 />
               </View>
             </ScrollView>
@@ -154,7 +160,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    auth: (email, password) => dispatch(auth(email,password))
+    auth: (email, password, authMode) => dispatch(auth(email,password, authMode))
   }
 }
 
