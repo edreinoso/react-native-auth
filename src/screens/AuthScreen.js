@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { auth } from '../store/actions/index'
 import { connect } from "react-redux";
 import validity from '../utility/validate';
+// import { useDispatch } from 'react-redux';
 import authReducer from '../store/actions/auth';
 
 // const AuthScreen = props => {
@@ -53,17 +54,50 @@ class AuthScreen extends Component {
     })
   }
 
-  // State change - dispatch actions
-  onButtonPressed = () => {
-    console.log(this.state.authMode)
-    this.props.auth(
-      this.state.controls.email.value,
-      this.state.controls.password.value,
-      this.state.authMode
-    )
-    this.props.navigation.navigate('First')
-  }
+  // authHandler = async () => {
+  //   let action;
+  //   if (isSignup) {
+  //     action = authActions.signup(
+  //       formState.inputValues.email,
+  //       formState.inputValues.password
+  //     );
+  //   } else {
+  //     action = authActions.login(
+  //       formState.inputValues.email,
+  //       formState.inputValues.password
+  //     );
+  //   }
+  //   setError(null);
+  //   setIsLoading(true);
+  //   try {
+  //     await dispatch(action);
+  //     props.navigation.navigate('Shop');
+  //   } catch (err) {
+  //     setError(err.message);
+  //     setIsLoading(false);
+  //   }
+  // };
 
+  // State change - dispatch actions
+  onButtonPressed = async () => {
+    console.log(this.state.authMode)
+    console.log('email:', this.state.controls.email.value, 'password:', this.state.controls.password.value)
+    // can this be possible?
+    try {
+      console.log('have made it to the beginning of the try')
+      await this.props.auth(
+        this.state.controls.email.value,
+        this.state.controls.password.value,
+        this.state.authMode
+      )
+      // this.props.navigation.navigate('First')
+      // reset text
+    } catch (err) {
+      console.log('cannot proceed')
+      // reset text
+    }
+
+  }
 
   onSwitchHandler = () => {
     this.setState(prevState => {
@@ -75,6 +109,8 @@ class AuthScreen extends Component {
 
   render() {
     const { isLoading } = this.props;
+    // const dispatch = useDispatch();
+
 
     return (
       // this flex is necessary for persistency
