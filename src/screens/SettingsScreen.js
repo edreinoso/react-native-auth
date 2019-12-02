@@ -8,11 +8,11 @@ class SettingsScreen extends Component {
   renderHeaderLeft() {
     return (
       <TouchableOpacity
-        onPress={() => this.props.navigation.pop()}
+        onPress={() => this.props.navigation.openDrawer()}
       >
         <Icon
           size={23}
-          name='ios-arrow-back'
+          name='ios-menu'
           type='ionicon'
           color={colors.black}
         />
@@ -26,7 +26,7 @@ class SettingsScreen extends Component {
         <Header
           headerLeft={this.renderHeaderLeft()}
         />
-        <View style={container.center}>
+        <View style={container.centerScreen}>
           <Text style={{ fontSize: text.titleText, padding: 5, color: colors.black }}> SettingsScreen </Text>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Fifth')}>

@@ -82,7 +82,6 @@ class AuthScreen extends Component {
   onButtonPressed = async () => {
     console.log(this.state.authMode)
     console.log('email:', this.state.controls.email.value, 'password:', this.state.controls.password.value)
-    // can this be possible?
     try {
       console.log('have made it to the beginning of the try')
       await this.props.auth(
@@ -90,14 +89,11 @@ class AuthScreen extends Component {
         this.state.controls.password.value,
         this.state.authMode
       )
+      this.props.navigation.navigate('First')
       this.reset();
-      // this.props.navigation.navigate('First')
-      // reset text
     } catch (err) {
       Alert.alert('An Error Ocurred', err.message, [{ text: 'Okay' }]);
-      // console.log(err.message)
       this.reset();
-      // reset text
     }
   }
 

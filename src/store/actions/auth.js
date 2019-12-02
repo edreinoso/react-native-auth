@@ -1,16 +1,16 @@
 import { AsyncStorage } from 'react-native';
-
-// export const SIGNUP = 'SIGNUP';
-// export const LOGIN = 'LOGIN';
-import { AUTH, SIGNUP } from './actionTypes';
-
-// this line is giving the yellow warning
+import { AUTH, LOGOUT } from './actionTypes';
 import { stopLoading, startLoading } from './ui';
+
+export const authenticate = (userId, token, expiryTime) => {
+  return dispatch => {
+    dispatch(setLogoutTimer(expiryTime)); // this line might not be necessary for now
+    dispatch({ type: AUTH, userId: userId, token: token })
+  }
+}
 
 // action should have a mode in order to distinguish which action is being dispatched
 export const auth = (email, password, authMode) => {
-  console.log('email:', email, 'password:', password, 'authMode:', authMode)
-
   return async dispatch => {
     dispatch(startLoading())
     let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
@@ -36,8 +36,9 @@ export const auth = (email, password, authMode) => {
       }
     )
 
-    if (authMode === 'login') {
-      if (!response.ok) {
+    if (!response.ok) {
+      if (authMode === 'login') {
+        dispatch(stopLoading())
         const errorResData = await response.json();
         const errorId = errorResData.error.message;
         let message = 'Something went wrong!';
@@ -48,8 +49,7 @@ export const auth = (email, password, authMode) => {
         }
         throw new Error(message);
       }
-    } else {
-      if (!response.ok) {
+      else {
         dispatch(stopLoading())
         const errorResData = await response.json();
         const errorId = errorResData.error.message;
@@ -64,6 +64,47 @@ export const auth = (email, password, authMode) => {
     const resData = await response.json();
     console.log(resData);
     dispatch(stopLoading())
-    dispatch({ type: SIGNUP });
+    dispatch(authenticate(
+      resData.localId,
+      resData.idToken,
+      parseInt(resData.expiresIn) * 1000
+    ));
+    const expirationDate = new Date(
+      new Date().getTime() + parseInt(resData.expiresIn) * 1000
+    )
+    // local id comes to be the user ID
+    saveDataToStore(resData.idToken, resData.localId, email, expirationDate) //this function will save the token and the expiration time locally for internal application handling
   };
 };
+
+const saveDataToStore = (tokenId, userId, email, expirationDate) => {
+  AsyncStorage.setItem(
+    'userData',
+    JSON.stringify({
+      token: tokenId,
+      userId: userId,
+      email: email,
+      expirationDate: expirationDate.toISOString()
+    })
+  )
+}
+
+const setLogoutTimer = expirationTime => {
+  return dispatch => {
+    timer = setTimeout(() => {
+      dispatch(logout())
+    }, expirationTime)
+  }
+}
+
+export const logout = () => {
+  clearLogoutTimer();
+  AsyncStorage.removeItem('userData')
+  return { type: LOGOUT }
+}
+
+export const clearLogoutTimer = () => {
+  if (timer) {
+    clearTimeout(timer)
+  }
+}

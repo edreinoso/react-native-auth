@@ -61,10 +61,12 @@ export const header = StyleSheet.create({
 
 export const text = StyleSheet.create({
   titleText: 20,
+  headerText: 18,
   buttonText: 14,
-  headerText: 18
+  normalText: 14
 })
 
+// this is to test the UI boundaries of the screen
 export const test = StyleSheet.create({
   black:{
     borderColor: 'black',

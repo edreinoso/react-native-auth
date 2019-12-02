@@ -69,6 +69,13 @@ const SettingsNavigator = createStackNavigator({
   headerMode: 'none'
 })
 
+logout = (props, dispatch) => {
+  // const dispatch = useDispatch();
+  console.log('getting to the logout function')
+  dispatch(authAction.logout());
+  // props.navigation.navigate('Auth');
+}
+
 const DrawerNavigator = createDrawerNavigator({
   Main: {
     screen: TabNavigator,
@@ -110,19 +117,13 @@ const DrawerNavigator = createDrawerNavigator({
               text={'Log out'}
               borderColor={colors.blue}
               borderRadius={5}
-              onButtonPress={() =>
-                dispatch(authAction.logout())
-              }
+              // onButtonPress={(props, dispatch) => logout(props, dispatch)}
+              onButtonPress={() => {
+                dispatch(authAction.logout()),
+                props.navigation.navigate('Auth')
+              }}
             />
           </View>
-          {/* <Button
-            title="Logout"
-            color={colors.blue}
-            onPress={() => {
-              dispatch(authAction.logout());
-              // props.navigation.navigate('Auth');
-            }}
-          /> */}
         </SafeAreaView>
       </View>
     )
