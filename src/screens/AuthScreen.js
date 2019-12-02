@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { View, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { container, colors, text } from '../styles/index';
 import { Cards, Button, TextField } from '../components/index';
 // import { Cards, TextField } from '../components/index';
@@ -7,38 +7,46 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { auth } from '../store/actions/index'
 import { connect } from "react-redux";
 import validity from '../utility/validate';
-// import { useDispatch } from 'react-redux';
 import authReducer from '../store/actions/auth';
 
 // const AuthScreen = props => {
 class AuthScreen extends Component {
   // State needs to go outside of the render
   state = {
-    authMode: 'login',
-    isLogin: false,
-    controls: {
-      email: {
-        value: '',
-        validity: false,
-        validationRules: {
-          isEmail: true
+    authMode: 'signUp',
+    isSignUp: false,
+    finished: false,
+  }
+
+  componentWillMount() {
+    this.reset();
+  }
+
+  reset = () => {
+    this.setState({
+      controls: {
+        email: {
+          value: '',
+          validity: true,
+          validationRules: {
+            isEmail: true
+          },
+          touched: false
         },
-        touched: false
+        password: {
+          value: '',
+          validity: true,
+          validationRules: {
+            minLength: 6 // doubt
+          },
+          touched: false
+        }
       },
-      password: {
-        value: '',
-        validity: false,
-        validationRules: {
-          minLength: 6 // doubt
-        },
-        touched: false
-      }
-    },
+    })
   }
 
   // Update text field
   onChangeTextField = (key, value) => {
-    // cannot return something like this.prevState
     this.setState(prevState => {
       return {
         controls: {
@@ -46,7 +54,7 @@ class AuthScreen extends Component {
           [key]: {
             ...prevState.controls[key],
             value: value,
-            validity: validity(value, prevState.controls[key].validationRules),
+            // validity: validity(value, prevState.controls[key].validationRules),
             touched: true
           }
         }
@@ -54,29 +62,21 @@ class AuthScreen extends Component {
     })
   }
 
-  // authHandler = async () => {
-  //   let action;
-  //   if (isSignup) {
-  //     action = authActions.signup(
-  //       formState.inputValues.email,
-  //       formState.inputValues.password
-  //     );
-  //   } else {
-  //     action = authActions.login(
-  //       formState.inputValues.email,
-  //       formState.inputValues.password
-  //     );
-  //   }
-  //   setError(null);
-  //   setIsLoading(true);
-  //   try {
-  //     await dispatch(action);
-  //     props.navigation.navigate('Shop');
-  //   } catch (err) {
-  //     setError(err.message);
-  //     setIsLoading(false);
-  //   }
-  // };
+  onFinishTextField = (key, value) => {
+    // variable value doesn't hold a text variable
+    let text = value.nativeEvent.text
+    this.setState(prevState => {
+      return {
+        controls: {
+          ...prevState.controls,
+          [key]: {
+            ...prevState.controls[key],
+            validity: validity(text, prevState.controls[key].validationRules),
+          }
+        }
+      }
+    })
+  }
 
   // State change - dispatch actions
   onButtonPressed = async () => {
@@ -90,28 +90,28 @@ class AuthScreen extends Component {
         this.state.controls.password.value,
         this.state.authMode
       )
+      this.reset();
       // this.props.navigation.navigate('First')
       // reset text
     } catch (err) {
-      console.log('cannot proceed')
+      Alert.alert('An Error Ocurred', err.message, [{ text: 'Okay' }]);
+      // console.log(err.message)
+      this.reset();
       // reset text
     }
-
   }
 
+  // changing from login to signup
   onSwitchHandler = () => {
     this.setState(prevState => {
       return {
-        authMode: prevState.authMode === "login" ? "signup" : "login"
+        authMode: prevState.authMode === "signUp" ? "login" : "signUp"
       };
     });
   };
 
   render() {
     const { isLoading } = this.props;
-    // const dispatch = useDispatch();
-
-
     return (
       // this flex is necessary for persistency
       <View style={container.screen}>
@@ -120,6 +120,7 @@ class AuthScreen extends Component {
             <ScrollView>
               <TextField
                 onChangeInput={val => this.onChangeTextField('email', val)}
+                onFinishInput={val => this.onFinishTextField('email', val)}
                 value={this.state.controls.email.value}
                 valid={this.state.controls.email.validity}
                 touched={this.state.controls.email.touched}
@@ -134,6 +135,7 @@ class AuthScreen extends Component {
               />
               <TextField
                 onChangeInput={val => this.onChangeTextField('password', val)}
+                onFinishInput={val => this.onFinishTextField('password', val)}
                 value={this.state.controls.password.value}
                 valid={this.state.controls.password.validity}
                 touched={this.state.controls.password.touched}
@@ -147,8 +149,8 @@ class AuthScreen extends Component {
                 borderWidth={1}
               />
               <View style={{ alignItems: 'center', paddingVertical: 5 }}>
-                {isLoading ? 
-                  <ActivityIndicator size="small" color={colors.black} /> : 
+                {isLoading ?
+                  <ActivityIndicator size="small" color={colors.black} /> :
                   <Button
                     fontSize={text.buttonText}
                     // width={dimensions.width / 3}
@@ -159,11 +161,10 @@ class AuthScreen extends Component {
                     textColor={colors.red}
                     borderColor={colors.white}
                     borderRadius={5}
-                    text={this.state.authMode === 'login' ? 'Login' : 'Sign Up'}
+                    text={this.state.authMode === 'signUp' ? 'Sign Up' : 'Login'}
                     onButtonPress={this.onButtonPressed}
                   />
                 }
-                
                 <Button
                   fontSize={text.buttonText}
                   // width={dimensions.width / 3}
@@ -174,8 +175,8 @@ class AuthScreen extends Component {
                   textColor={colors.blue}
                   borderColor={colors.white}
                   borderRadius={5}
-                  text={`Switch to ${this.state.authMode === 'login' ? 'Sign Up' : 'Login'}`}
-                  onButtonPress={this.onSwitchHandler}
+                  text={`Switch to ${this.state.authMode === 'signUp' ? 'Login' : 'Sign Up'}`}
+                  onButtonPress={() => this.onSwitchHandler()}
                 />
               </View>
             </ScrollView>
@@ -196,7 +197,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    auth: (email, password, authMode) => dispatch(auth(email,password, authMode))
+    auth: (email, password, authMode) => dispatch(auth(email, password, authMode))
   }
 }
 

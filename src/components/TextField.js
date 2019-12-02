@@ -16,6 +16,7 @@ class TextField extends Component { // hook problems when having classes
       touched,
       valid,
       onChangeInput,
+      onFinishInput,
       errorText,
       minLength,
       secureTextEntry,
@@ -32,6 +33,7 @@ class TextField extends Component { // hook problems when having classes
           value={value}
           // new function that would be on change text after finish
           onChangeText={onChangeInput}
+          onEndEditing={onFinishInput}
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
           autoCorrect={autoCorrect}
@@ -44,7 +46,8 @@ class TextField extends Component { // hook problems when having classes
             borderBottomWidth: borderWidth,
           }]}
         />
-        {!valid && touched && (
+        {/* {!valid && touched && ( */}
+        {!valid && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{errorText}</Text>
           </View>

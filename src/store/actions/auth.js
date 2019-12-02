@@ -12,11 +12,11 @@ export const auth = (email, password, authMode) => {
   console.log('email:', email, 'password:', password, 'authMode:', authMode)
 
   return async dispatch => {
-   dispatch(startLoading())
+    dispatch(startLoading())
     let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
-    // if (authMode === 'login') {
-    //   url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
-    // }
+    if (authMode === 'login') {
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
+    }
 
     const response = await fetch(
       url,
@@ -35,12 +35,32 @@ export const auth = (email, password, authMode) => {
         }
       }
     )
-    
-    if (!response.ok) {
-      dispatch(stopLoading())
-      throw new Error('Something went wrong!');
+
+    if (authMode === 'login') {
+      if (!response.ok) {
+        const errorResData = await response.json();
+        const errorId = errorResData.error.message;
+        let message = 'Something went wrong!';
+        if (errorId === 'EMAIL_NOT_FOUND') {
+          message = 'This email could not be found!';
+        } else if (errorId === 'INVALID_PASSWORD') {
+          message = 'This password is not valid!';
+        }
+        throw new Error(message);
+      }
+    } else {
+      if (!response.ok) {
+        dispatch(stopLoading())
+        const errorResData = await response.json();
+        const errorId = errorResData.error.message;
+        let message = 'Something went wrong!';
+        if (errorId === 'EMAIL_EXISTS') {
+          message = 'This email exists already!';
+        }
+        throw new Error(message);
+      }
     }
-    
+
     const resData = await response.json();
     console.log(resData);
     dispatch(stopLoading())
