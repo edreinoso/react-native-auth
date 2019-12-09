@@ -62,14 +62,13 @@ class AuthScreen extends Component {
     let username = this.state.controls.email.value
     let password = this.state.controls.password.value
     
-    console.log('testing inside of button pressed- username:', username, 'password:', password)
-
     Auth.signUp({
       username,
       password,
     })
       .then(data => console.log(data))
       .catch(err => console.log(err));
+    this.reset();
   }
 
   // changing from login to signup
