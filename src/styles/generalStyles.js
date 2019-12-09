@@ -1,10 +1,19 @@
-import { StyleSheet, Dimensions } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native';
 
 export const container = StyleSheet.create({
-  center: {
+  screen: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+  },
+  centerScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  authContainer: {
+    width: '80%',
+    // maxWidth: 400,
+    // maxHeight: 400,
+    padding: 20
   }
 })
 
@@ -26,12 +35,13 @@ export const cards = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#fff',
     shadowColor: '#000',
+    shadowRadius: 3, // new to me
     shadowOffset: {
       width: 0,
-      height: 3
+      height: 2,
     },
     shadowOpacity: 0.27,
-    elevation: 6
+    elevation: 6,
   }
 })
 
@@ -40,7 +50,7 @@ export const header = StyleSheet.create({
     zIndex: 10,
     height: 70,
     padding: 15,
-    borderBottomWidth:1,
+    borderBottomWidth: 1,
     borderColor: colors.grey,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -51,6 +61,27 @@ export const header = StyleSheet.create({
 
 export const text = StyleSheet.create({
   titleText: 20,
+  headerText: 18,
   buttonText: 14,
-  headerText: 18
+  normalText: 14
+})
+
+// this is to test the UI boundaries of the screen
+export const test = StyleSheet.create({
+  black: {
+    borderColor: 'black',
+    borderWidth: 1
+  },
+  blue: {
+    borderColor: 'blue',
+    borderWidth: 1
+  },
+  pink: {
+    borderColor: 'pink',
+    borderWidth: 1
+  },
+  green: {
+    borderColor: 'green',
+    borderWidth: 1
+  }
 })

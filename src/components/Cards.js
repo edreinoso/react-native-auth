@@ -1,15 +1,19 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { colors, cards } from '../styles/index'
+import React, { Component } from 'react'
+import { View } from 'react-native'
+import { cards } from '../styles/index'
 
 class Cards extends Component {
-  render() {
+  render () {
+    const {
+      style,
+      children
+    } = this.props
     return (
-      <View style={[cards.cardContainer, { padding: 10 }]}>
-        <Text> Cards </Text>
+      <View style={[cards.cardContainer, style]}>
+        {children}
       </View>
-    );
+    )
   }
 }
 
-export default Cards;
+export default Cards
