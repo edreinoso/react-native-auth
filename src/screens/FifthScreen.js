@@ -26,7 +26,7 @@ class FifthScreen extends Component {
         <Header
           headerLeft={this.renderHeaderLeft()}
         />
-        <View style={container.center}>
+        <View style={container.centerScreen}>
           <Text style={{ fontSize: text.titleText, padding: 5, color: colors.black }}> FifthScreen </Text>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Sixth')}>

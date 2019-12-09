@@ -46,11 +46,11 @@ class TextField extends Component {
             borderBottomWidth: borderWidth
           }]}
         />
-        {/* {!valid && (
+        {!valid && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{errorText}</Text>
           </View>
-        )} */}
+        )}
       </View>
     )
   }

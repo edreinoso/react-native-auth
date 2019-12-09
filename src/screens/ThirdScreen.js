@@ -37,13 +37,8 @@ class ThirdScreen extends Component {
           headerCenter={this.renderHeaderCenter()}
           headerLeft={this.renderHeaderLeft()}
         />
-        <View style={container.center}>
+        <View style={container.centerScreen}>
           <Text style={{ fontSize: text.titleText, padding: 5, color: colors.black }}> ThirdScreen </Text>
-          <TextField
-            placeholder={'Text field component'}
-          />
-          {/* Placeholder */}
-          <View style={{ margin: 5 }} />
           <Button
             fontSize={text.buttonText}
             width={dimensions.width / 3}
