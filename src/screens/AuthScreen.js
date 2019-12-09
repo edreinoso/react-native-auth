@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, ScrollView, Text, ActivityIndicator, Alert } from 'react-native';
 import { container, colors, text } from '../styles/index';
 import { Cards, Button, TextField } from '../components/index';
 // import { Cards, TextField } from '../components/index';
@@ -114,6 +114,7 @@ class AuthScreen extends Component {
         <LinearGradient colors={['#ffedff', '#ffe3ff']} style={container.centerScreen}>
           <Cards style={container.authContainer}>
             <ScrollView>
+              <Text>Auth with Firebase</Text>
               <TextField
                 onChangeInput={val => this.onChangeTextField('email', val)}
                 onFinishInput={val => this.onFinishTextField('email', val)}
