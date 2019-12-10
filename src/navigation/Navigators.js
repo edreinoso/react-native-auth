@@ -1,12 +1,15 @@
-import React from 'react';
-import { View } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { createDrawerNavigator } from 'react-navigation-drawer';
-import { createAppContainer } from 'react-navigation';
-
+import React from 'react'
+import { View, SafeAreaView } from 'react-native'
+import Icon from 'react-native-vector-icons/Ionicons'
+import { createStackNavigator } from 'react-navigation-stack'
+import { createBottomTabNavigator } from 'react-navigation-tabs'
+import { createDrawerNavigator, DrawerNavigatorItems } from 'react-navigation-drawer'
+import { createAppContainer } from 'react-navigation'
 import { FirstScreen, SecondScreen, ThirdScreen, SettingsScreen } from '../screens/index'
+import * as authAction from '../store/actions/auth'
+import { dimensions, colors, text } from '../styles/index'
+import { useDispatch } from 'react-redux'
+import { Button } from '../components/index'
 
 // Render tab bar icon
 const TabIcon = (iconName, color, iconSize) => {
@@ -26,17 +29,17 @@ const HomeNavigator = createStackNavigator({
   First: FirstScreen,
 },{
   headerMode: 'none'
-});
+})
 const SearchNavigator = createStackNavigator({
   Second: SecondScreen,
 },{
   headerMode: 'none'
-});
+})
 const ProfileNavigator = createStackNavigator({
   Third: ThirdScreen,
 },{
   headerMode: 'none'
-});
+})
 
 // Components used for the Drawer
 const TabNavigator = createBottomTabNavigator({
@@ -75,6 +78,44 @@ const DrawerNavigator = createDrawerNavigator({
   Settings: {
     screen: SettingsNavigator
   }
+}, {
+  contentOptions: {
+    activeTintColor: colors.blue
+  },
+  contentComponent: props => {
+    const dispatch = useDispatch()
+    return(
+      <View>
+        <SafeAreaView>
+          <View style={{height: '90%'}}>
+            <DrawerNavigatorItems {...props} />
+          </View>
+          <View style={{
+            height: '10%',
+            paddingLeft: 5,
+            justifyContent: 'flex-start',
+            alignContent: 'flex-start'
+          }}>
+            <Button
+              fontSize={text.buttonText}
+              width={dimensions.width / 3}
+              borderWidth={1}
+              padding={10}
+              color={colors.white}
+              textColor={colors.blue}
+              text={'Log out'}
+              borderColor={colors.blue}
+              borderRadius={5}
+              onButtonPress={() => {
+                dispatch(authAction.logout()),
+                props.navigation.navigate('Auth')
+              }}
+            />
+          </View>
+        </SafeAreaView>
+      </View>
+    )
+  }
 })
 
-export default createAppContainer(DrawerNavigator);
+export default createAppContainer(DrawerNavigator)

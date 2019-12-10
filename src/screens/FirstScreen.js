@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { Component } from 'react'
+import Icon from 'react-native-vector-icons/Ionicons'
+import { View, Text, TouchableOpacity } from 'react-native'
 import { container, text, colors, dimensions } from '../styles/index'
-import { Button, TextField, Header } from '../components/index';
+import { Auth } from 'aws-amplify'
+import { Button, Header } from '../components/index'
 
 class FirstScreen extends Component {
+  state = {
+    email: ''
+  }
+  
   renderHeaderCenter() {
     return (
       <View>
@@ -30,6 +35,16 @@ class FirstScreen extends Component {
     )
   }
 
+  componentWillMount () {
+    Auth.currentAuthenticatedUser().then(user => {
+      this.setState({
+        email: user.attributes.email
+      })
+      console.log(user.attributes.email)
+    })
+      .catch(err => console.log(err));
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -39,6 +54,7 @@ class FirstScreen extends Component {
         />
         <View style={container.centerScreen}>
           <Text style={{ fontSize: text.titleText, padding: 5, color: colors.black }}> FirstScreen </Text>
+          <Text style={{ padding: 5 }}>{this.state.email}</Text>
           <Button
             fontSize={text.buttonText}
             width={dimensions.width / 3}
@@ -54,8 +70,8 @@ class FirstScreen extends Component {
           />
         </View>
       </View>
-    );
+    )
   }
 }
 
-export default FirstScreen;
+export default FirstScreen

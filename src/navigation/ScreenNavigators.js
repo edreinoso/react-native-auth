@@ -6,8 +6,18 @@ import { FourthScreen, FifthScreen, SixthScreen, AuthScreen } from '../screens/i
 import HomeNavigator from './Navigators'
 
 const ScreenNavigators = createStackNavigator({
-  Auth: AuthScreen,
-  Main: HomeNavigator,
+  Auth: { 
+    screen: AuthScreen,
+    navigationOptions: {
+      gesturesEnabled: false,
+    }
+  },
+  Main: { 
+    screen: HomeNavigator,
+    navigationOptions: {
+      gesturesEnabled: false
+    }
+  },
   Fourth: FourthScreen,
   Fifth: FifthScreen,
   Sixth: SixthScreen,

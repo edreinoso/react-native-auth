@@ -5,7 +5,8 @@ import { container, text, colors } from '../styles/index'
 import { Button, TextField, Cards } from '../components/index'
 import { connect } from 'react-redux'
 import validity from '../utility/validate'
-import { auth, confirmCodeSignUp } from '../store/actions/index'
+import { auth, confirmCodeSignUp, stopLoading, startLoading } from '../store/actions/index'
+// import { Auth } from 'aws-amplify'
 
 class AuthScreen extends Component {
   state = {
@@ -90,6 +91,7 @@ class AuthScreen extends Component {
         })
       }
       
+      this.props.startLoading()
       try {
         await this.props.auth(
           this.state.controls.email.value,
@@ -98,28 +100,31 @@ class AuthScreen extends Component {
         )
         if (this.state.authMode === 'login') {
           // what to do with these two values? 
+          this.props.stopLoading()
           this.props.navigation.navigate('First')
           this.reset()
         }
+        this.props.stopLoading()
       } catch (err) {
+        this.props.stopLoading()
         Alert.alert('An Error Ocurred', err.message, [{ text: 'Okay'}])
-        this.reset()
       }
     }
   }
 
   onConfirmSignUpPressed = async () => {
     try {
+      this.props.startLoading()
       await this.props.confirmCodeStep(
         this.state.controls.email.value,
         this.state.controls.confirmCode.value
       )
+      this.props.stopLoading()
       this.props.navigation.navigate('First')
       this.reset()
     } catch (err) {
+      this.props.stopLoading()
       Alert.alert('An Error Ocurrerd', err.message, [{ text: 'Okay' }])
-      // this should only reset the code field
-      // this.reset()
     }
   }
 
@@ -130,6 +135,13 @@ class AuthScreen extends Component {
       }
     })
   }
+
+  // onTestButtonPressed = () => {
+  //   Auth.currentAuthenticatedUser({
+  //     bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+  //   }).then(user => console.log(user))
+  //     .catch(err => console.log(err));
+  // }
 
   render() {
     const { isLoading } = this.props;
@@ -190,6 +202,17 @@ class AuthScreen extends Component {
                 {this.state.confirmPass ? 
                   isLoading ? <ActivityIndicator size="small" color={colors.black} /> : <Button fontSize={text.buttonText} borderWidth={1} padding={10} color={colors.white} textColor={colors.blue} borderColor={colors.white} borderRadius={5} text='Confirm Sign Up' onButtonPress={this.onConfirmSignUpPressed} /> : 
                   isLoading ? <ActivityIndicator size="small" color={colors.black} /> : <View><Button fontSize={text.buttonText} borderWidth={1} padding={10} color={colors.white} textColor={colors.red} borderColor={colors.white} borderRadius={5} text={this.state.authMode === 'signUp' ? 'Sign Up' : 'Login'} onButtonPress={this.onLoginAndSubmitPressed} /><Button fontSize={text.buttonText} borderWidth={1} padding={10} color={colors.white} textColor={colors.blue} borderColor={colors.white} borderRadius={5} text={`Switch to ${this.state.authMode === 'signUp' ? 'Login' : 'Sign Up'}`} onButtonPress={() => this.onSwitchHandler()} /></View> }
+                {/* <Button
+                  fontSize={text.buttonText} 
+                  borderWidth={1} 
+                  padding={10} 
+                  color={colors.white} 
+                  textColor={colors.green} 
+                  borderColor={colors.white} 
+                  borderRadius={5} 
+                  text='Test user' 
+                  onButtonPress={this.onTestButtonPressed}
+                /> */}
               </View>
             </ScrollView>
           </Cards>
@@ -198,19 +221,18 @@ class AuthScreen extends Component {
     )
   }
 }
-
-// at the moment, this is not doing anything. It's currently secundary
 const mapStateToProps = state => {
   return {
     isLoading: state.ui.isLoading
   };
 };
 
-// email would come to be the username
 const mapDispatchToProps = dispatch => {
   return {
     auth: (email, password, authMode) => dispatch(auth(email, password, authMode)),
-    confirmCodeStep: (email, confirmCode) => dispatch(confirmCodeSignUp(email, confirmCode))
+    confirmCodeStep: (email, confirmCode) => dispatch(confirmCodeSignUp(email, confirmCode)),
+    startLoading: () => dispatch(startLoading()),
+    stopLoading: () => dispatch(stopLoading())
   }
 }
 

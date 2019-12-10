@@ -1,39 +1,42 @@
-// this might actually not be necessary either
-// import { AsyncStorage } from 'react-native';
-
 import { Auth } from 'aws-amplify'
-import { AUTH, LOGOUT } from './actionTypes';
-import { stopLoading, startLoading } from './ui';
+import { LOGOUT } from './actionTypes'
 
 export const confirmCodeSignUp = (username, code) => {
   console.log(username, code)
   return async dispatch => {
-    dispatch(startLoading())
     const response = await Auth.confirmSignUp(username, code, {
       forceAliasCreation: true
     })
     console.log('confirm code response:',response)
-    dispatch(stopLoading())
   }
 }
 
 export const auth = (username, password, authMode) => {
   console.log(username, password, authMode)
   return async dispatch => {
-    dispatch(startLoading())
     if (authMode === 'signUp') {
       const response = await Auth.signUp({
         username,
         password,
       })
-      console.log('sign in response:',response)
-    } else {
+      console.log('sign up response:',response)
+    } else if (authMode === 'login') {
       const response = await Auth.signIn({
         username,
         password,
       })
       console.log('login response:',response)
     }
-    dispatch(stopLoading())
-  };
-};
+  }
+}
+
+
+export const logout = () => {
+  // this is returning undefined, yet when trying to get the current user from the auth screen
+  // there is a return as no user authenticated. For now skip this error, if it comes back later
+  // take a look at it
+  Auth.signOut  ({ global: true })
+    .then(data => console.log(data))
+    .catch(err => console.log(err))
+  return { type: LOGOUT }
+}
