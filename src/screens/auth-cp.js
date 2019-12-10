@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
-import { View, Text, ScrollView, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, Alert } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { container, text, colors } from '../styles/index'
 import { Button, TextField, Cards } from '../components/index'
-import { connect } from 'react-redux'
+// import { connect } from 'react-redux'
 import validity from '../utility/validate'
-import { auth, confirmCodeSignUp } from '../store/actions/index'
+// import { auth } from '../store/actions/index'
+// this might not be necessary if actions are set
+import { Auth } from 'aws-amplify'
 
 class AuthScreen extends Component {
   state = {
@@ -79,48 +81,77 @@ class AuthScreen extends Component {
     })
   }
 
-  onLoginAndSubmitPressed = async () => {
-    // error handling
-    if (!this.state.controls.email.validity || !this.state.controls.password.validity) {
+  errorMessage = (err) => {
+    if (err.code === 'UserNotConfirmedException') {
+      Alert.alert('Account not verified yet', err.code, [{ text: 'Okay' }]);
+    } else if (err.code === 'PasswordResetRequiredException') {
+      Alert.alert('Existing user found. Please reset your password', err.code, [{ text: 'Okay' }]);
+    } else if (err.code === 'NotAuthorizedException') {
+      Alert.alert('Not authorized', err.code, [{ text: 'Okay' }]);
+    } else if (err.code === 'UserNotFoundException') {
+      Alert.alert('User does not exist!', err.code, [{ text: 'Okay' }]);
+    } else {
+      Alert.alert(err.code);
+    }
+  }
+
+  onLoginAndSubmitPressed = () => {
+    console.log(this.state.controls.email.valid,this.state.controls.password.valid)
+
+    if (!this.state.controls.email.touched || !this.state.controls.password.touched) {
+      Alert.alert('Please input values in fields')
+    } else if (!this.state.controls.email.validity || !this.state.controls.password.validity) {
       Alert.alert('Please enter valid inputs')
     } else {
+      let username = this.state.controls.email.value
+      let password = this.state.controls.password.value
+      console.log(this.state.authMode)
+      // Sign Up!
       if (this.state.authMode === 'signUp') {
+        // Once this variable changes, then there's another field that needs to be added.
         this.setState({
           confirmPass: true
         })
-      }
-      
-      try {
-        await this.props.auth(
-          this.state.controls.email.value,
-          this.state.controls.password.value,
-          this.state.authMode
-        )
-        if (this.state.authMode === 'login') {
-          // what to do with these two values? 
-          this.props.navigation.navigate('First')
-          this.reset()
-        }
-      } catch (err) {
-        Alert.alert('An Error Ocurred', err.message, [{ text: 'Okay'}])
+        Auth.signUp({
+          username,
+          password,
+        })
+          .then(data => console.log(data))
+          .catch(err => {
+            console.log(err)
+            this.errorMessage(err)
+          })
+      } else {
+        // Sign In!
+        Auth.signIn({
+          username, // Required, the username
+          password, // Optional, the password
+        })
+          .then(user => {
+            console.log(user)
+            this.props.navigation.navigate('First') // if it was successful, then go to next screen
+          })
+          .catch(err => {
+            console.log(err)
+            this.errorMessage(err)
+          })
         this.reset()
       }
     }
   }
 
-  onConfirmSignUpPressed = async () => {
-    try {
-      await this.props.confirmCodeStep(
-        this.state.controls.email.value,
-        this.state.controls.confirmCode.value
-      )
-      this.props.navigation.navigate('First')
-      this.reset()
-    } catch (err) {
-      Alert.alert('An Error Ocurrerd', err.message, [{ text: 'Okay' }])
-      // this should only reset the code field
-      // this.reset()
-    }
+  onConfirmSignUpPressed = () => {
+    // this might have to change to global variable since it's being used above as well
+    let username = this.state.controls.email.value
+    let code = this.state.controls.confirmCode.value
+
+    Auth.confirmSignUp(username, code, {
+      forceAliasCreation: true
+    }).then(data => console.log(data))
+      .catch(err => console.log(err))
+    // navigating after confirming the code
+    this.props.navigation.navigate('First')
+    this.reset()
   }
 
   onSwitchHandler = () => {
@@ -132,7 +163,6 @@ class AuthScreen extends Component {
   }
 
   render() {
-    const { isLoading } = this.props;
     return (
       // this flex is necessary for persistency
       <View style={container.screen}>
@@ -187,9 +217,44 @@ class AuthScreen extends Component {
                 />
               ) : null}
               <View style={{ alignItems: 'center', paddingVertical: 5 }}>
-                {this.state.confirmPass ? 
-                  isLoading ? <ActivityIndicator size="small" color={colors.black} /> : <Button fontSize={text.buttonText} borderWidth={1} padding={10} color={colors.white} textColor={colors.blue} borderColor={colors.white} borderRadius={5} text='Confirm Sign Up' onButtonPress={this.onConfirmSignUpPressed} /> : 
-                  isLoading ? <ActivityIndicator size="small" color={colors.black} /> : <View><Button fontSize={text.buttonText} borderWidth={1} padding={10} color={colors.white} textColor={colors.red} borderColor={colors.white} borderRadius={5} text={this.state.authMode === 'signUp' ? 'Sign Up' : 'Login'} onButtonPress={this.onLoginAndSubmitPressed} /><Button fontSize={text.buttonText} borderWidth={1} padding={10} color={colors.white} textColor={colors.blue} borderColor={colors.white} borderRadius={5} text={`Switch to ${this.state.authMode === 'signUp' ? 'Login' : 'Sign Up'}`} onButtonPress={() => this.onSwitchHandler()} /></View> }
+                {this.state.confirmPass ? (
+                  <Button
+                    fontSize={text.buttonText}
+                    borderWidth={1}
+                    padding={10}
+                    color={colors.white}
+                    textColor={colors.blue}
+                    borderColor={colors.white}
+                    borderRadius={5}
+                    text='Confirm Sign Up'
+                    onButtonPress={this.onConfirmSignUpPressed}
+                  />
+                ) : (
+                    <View>
+                      <Button
+                        fontSize={text.buttonText}
+                        borderWidth={1}
+                        padding={10}
+                        color={colors.white}
+                        textColor={colors.red}
+                        borderColor={colors.white}
+                        borderRadius={5}
+                        text={this.state.authMode === 'signUp' ? 'Sign Up' : 'Login'}
+                        onButtonPress={this.onLoginAndSubmitPressed}
+                      />
+                      <Button
+                        fontSize={text.buttonText}
+                        borderWidth={1}
+                        padding={10}
+                        color={colors.white}
+                        textColor={colors.blue}
+                        borderColor={colors.white}
+                        borderRadius={5}
+                        text={`Switch to ${this.state.authMode === 'signUp' ? 'Login' : 'Sign Up'}`}
+                        onButtonPress={() => this.onSwitchHandler()}
+                      />
+                    </View>
+                  )}
               </View>
             </ScrollView>
           </Cards>
@@ -199,19 +264,18 @@ class AuthScreen extends Component {
   }
 }
 
-// at the moment, this is not doing anything. It's currently secundary
-const mapStateToProps = state => {
-  return {
-    isLoading: state.ui.isLoading
-  };
-};
+export default AuthScreen
 
-// email would come to be the username
-const mapDispatchToProps = dispatch => {
-  return {
-    auth: (email, password, authMode) => dispatch(auth(email, password, authMode)),
-    confirmCodeStep: (email, confirmCode) => dispatch(confirmCodeSignUp(email, confirmCode))
-  }
-}
+// const mapStateToProps = state => {
+//   return {
+//     isLoading: state.ui.isLoading
+//   };
+// };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuthScreen);
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     auth: (email, password, authMode) => dispatch(auth(email, password, authMode))
+//   }
+// }
+
+// export default connect(mapStateToProps, mapDispatchToProps)(AuthScreen);

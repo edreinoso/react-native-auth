@@ -8,17 +8,19 @@ import { stopLoading, startLoading } from './ui';
 export const confirmCodeSignUp = (username, code) => {
   console.log(username, code)
   return async dispatch => {
+    dispatch(startLoading())
     const response = await Auth.confirmSignUp(username, code, {
       forceAliasCreation: true
     })
     console.log('confirm code response:',response)
+    dispatch(stopLoading())
   }
 }
 
 export const auth = (username, password, authMode) => {
   console.log(username, password, authMode)
   return async dispatch => {
-    // dispatch(startLoading())
+    dispatch(startLoading())
     if (authMode === 'signUp') {
       const response = await Auth.signUp({
         username,
@@ -32,6 +34,6 @@ export const auth = (username, password, authMode) => {
       })
       console.log('login response:',response)
     }
-    // dispatch(stopLoading())
+    dispatch(stopLoading())
   };
 };
