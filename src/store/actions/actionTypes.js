@@ -1,0 +1,5 @@
+export const AUTH = 'AUTH';
+export const UI_START_LOADING = 'UI_START_LOADING';
+export const UI_STOP_LOADING = 'UI_STOP_LOADING';
+// this might be unnecessary, but let's first find out how it plays out
+export const LOGOUT = 'LOGOUT';
