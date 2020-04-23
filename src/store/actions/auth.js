@@ -13,9 +13,9 @@ export const authenticate = (userId, token, expiryTime) => {
 export const auth = (email, password, authMode) => {
   return async dispatch => {
     dispatch(startLoading())
-    let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
+    let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$YOUR_KEY'
     if (authMode === 'login') {
-      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDmCbVg-Tlhmle8J4XfCVEix3A4f_kRUek'
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$YOUR_KEY'
     }
 
     const response = await fetch(
