@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "react-native-project-template",
-    "slug": "react-native-project-template",
+    "name": "react-native-auth",
+    "slug": "react-native-auth",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
+    "sdkVersion": "38.0.0",
     "platforms": [
       "ios",
       "android",

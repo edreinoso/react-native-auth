@@ -36,6 +36,7 @@ export const logout = () => {
   // there is a return as no user authenticated. For now skip this error, if it comes back later
   // take a look at it
   Auth.signOut  ({ global: true })
+    // data will be undefined
     .then(data => console.log(data))
     .catch(err => console.log(err))
   return { type: LOGOUT }

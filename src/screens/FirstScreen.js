@@ -40,6 +40,7 @@ class FirstScreen extends Component {
       this.setState({
         email: user.attributes.email
       })
+      // not authenticated?
       console.log(user.attributes.email)
     })
       .catch(err => console.log(err));

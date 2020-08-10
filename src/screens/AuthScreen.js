@@ -15,6 +15,7 @@ class AuthScreen extends Component {
   }
 
   componentWillMount() {
+    // console.log('Hello World')
     this.reset()
   }
 
@@ -222,6 +223,7 @@ class AuthScreen extends Component {
   }
 }
 const mapStateToProps = state => {
+  console.log(state)
   return {
     isLoading: state.ui.isLoading
   };
