@@ -14,6 +14,7 @@ export const confirmCodeSignUp = (username, code) => {
 export const auth = (username, password, authMode) => {
   console.log(username, password, authMode)
   return async dispatch => {
+    console.log('hello world')
     if (authMode === 'signUp') {
       const response = await Auth.signUp({
         username,
